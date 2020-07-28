@@ -1,0 +1,92 @@
+#!/bin/sh
+
+# This is a script which installs all the items in His Majesty's Software
+# Suite (HMSS).
+
+# Constants.
+HMSS_DIR="$HOME/hmss/"
+PATH_TO_WALLPAPER="$(HMSS)wallpaper.jpg"
+
+# Let's get cracking...
+cd $HOME
+sudo apt update
+
+##########
+# BASICS #
+##########
+
+# Install Git.
+sudo apt --yes install git
+
+# Install Chromium.
+sudo apt --yes install chromium-browser
+
+# Install PIP3.
+sudo apt --yes install python3-pip
+
+# Install the extra plugins for Gedit.
+sudo apt --yes install gedit-plugins
+
+# Change wallpaper.
+echo "*** Changing wallpaper... ***"
+pcmanfm --set-wallpaper $PATH_TO_WALLPAPER
+# ^ That line requires an absolute path, for some reason. ^
+if [ $? -ne 0 ]; then exit 1; fi
+echo "*** Wallpaper changed. ***"
+cd $HOME
+
+############
+# THE WIKI #
+############
+
+# Install SQLite and browser.
+sudo apt --yes install sqlite3
+sudo apt --yes install sqlitebrowser
+
+# Install NodeJS and NPM.
+sudo apt --yes install nodejs
+sudo apt --yes install npm
+
+# Download and install the repo.
+git clone https://github.com/tomhosker/kingdom-of-cyprus.git
+cd kingdom-of-cyprus/
+npm install
+cd ..
+
+#####################
+# HOSKER'S ALMANACK #
+#####################
+
+# Install LaTeX.
+sudo apt --yes install texlive-full
+
+# Clone the repo.
+git clone https://github.com/tomhosker/hoskers-almanack.git
+
+############
+# CHANCERY #
+############
+
+# Download the repo for Formulary A.
+git clone https://github.com/tomhosker/chancery-paphos.git
+
+# Download and install the repo for Formulary B.
+git clone https://github.com/tomhosker/chancery-b-paphos.git
+cd chancery-b/
+sh install_externals
+cd ..
+
+#####################
+# OTHER THIRD PARTY #
+#####################
+
+# Install VeraCrypt.
+sudo add-apt-repository ppa:unit193/encryption
+sudo apt update
+sudo apt --yes install veracrypt
+
+# Install Inkscape.
+sudo apt --yes install inkscape
+
+# That's it!
+echo "***** HMSS installed successfully! *****"
