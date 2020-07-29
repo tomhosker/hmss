@@ -4,12 +4,13 @@
 # Suite (HMSS).
 
 # Constants.
-HMSS_DIR="$HOME/hmss/"
-PATH_TO_WALLPAPER="$(HMSS)wallpaper.jpg"
+HMSS_DIR="$HOME/hmss"
+PATH_TO_WALLPAPER="$HMSS_DIR/wallpaper.jpg"
 
 # Let's get cracking...
 cd $HOME
 sudo apt update
+sudo apt upgrade
 
 ##########
 # BASICS #
@@ -39,51 +40,51 @@ cd $HOME
 # THE WIKI #
 ############
 
-# Install SQLite and browser.
-sudo apt --yes install sqlite3
-sudo apt --yes install sqlitebrowser
-
-# Install NodeJS and NPM.
-sudo apt --yes install nodejs
-sudo apt --yes install npm
-
-# Download and install the repo.
-git clone https://github.com/tomhosker/kingdom-of-cyprus.git
-cd kingdom-of-cyprus/
-npm install
-cd ..
+if [ ! -d kingdom-of-cyprus ]; then
+    # Install SQLite and browser.
+    sudo apt --yes install sqlite3
+    sudo apt --yes install sqlitebrowser
+    # Install NodeJS and NPM.
+    sudo apt --yes install nodejs
+    sudo apt --yes install npm
+    # Download and install the repo.
+    git clone https://github.com/tomhosker/kingdom-of-cyprus.git
+    cd kingdom-of-cyprus/
+    npm install
+    cd ..
+fi
 
 #####################
 # HOSKER'S ALMANACK #
 #####################
 
-# Install LaTeX.
-sudo apt --yes install texlive-full
-
-# Clone the repo.
-git clone https://github.com/tomhosker/hoskers-almanack.git
+if [ ! -d hoskers-almanack ]; then
+    # Install LaTeX.
+    sudo apt --yes install texlive-full
+    # Clone the repo.
+    git clone https://github.com/tomhosker/hoskers-almanack.git
+fi
 
 ############
 # CHANCERY #
 ############
 
-# Download the repo for Formulary A.
-git clone https://github.com/tomhosker/chancery-paphos.git
+if [ ! -d chancery ]; then
+    # Download the repo for Formulary A.
+    git clone https://github.com/tomhosker/chancery.git
+fi
 
-# Download and install the repo for Formulary B.
-git clone https://github.com/tomhosker/chancery-b-paphos.git
-cd chancery-b/
-sh install_externals
-cd ..
+if [ ! -d chancery-b ]; then
+    # Download and install the repo for Formulary B.
+    git clone https://github.com/tomhosker/chancery-b.git
+    cd chancery-b/
+    sh install_externals
+    cd ..
+fi
 
 #####################
 # OTHER THIRD PARTY #
 #####################
-
-# Install VeraCrypt.
-sudo add-apt-repository ppa:unit193/encryption
-sudo apt update
-sudo apt --yes install veracrypt
 
 # Install Inkscape.
 sudo apt --yes install inkscape
