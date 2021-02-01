@@ -3,18 +3,36 @@
 # This is a script which installs all the items in His Majesty's Software
 # Suite (HMSS).
 
+# Run me with `sh installer` plus any flags, e.g. `sh installer --raspian`.
+
 # Constants.
 HMSS_DIR="$HOME/hmss"
 PATH_TO_WALLPAPER="$HMSS_DIR/wallpaper.jpg"
 
-# Let's get cracking...
-cd $HOME
-sudo apt update
-sudo apt upgrade
+# Flags.
+raspian_flag="n"
+xubuntu_flag="n"
+
+################
+# UPDATE FLAGS #
+################
+
+for flag in $@; do
+    if [ $flag = "--raspian" ]; then
+        raspian_flag="y"
+    elif [ $flag = "--xubuntu" ]; then
+        xubuntu_flag="y"
+    fi
+done
 
 ##########
 # BASICS #
 ##########
+
+# Let's get cracking...
+cd $HOME
+sudo apt update
+sudo apt --yes upgrade
 
 # Install Git.
 sudo apt --yes install git
@@ -25,13 +43,17 @@ sudo apt --yes install chromium-browser
 # Install PIP3.
 sudo apt --yes install python3-pip
 
-# Install the extra plugins for Gedit.
+# Install the extra plugins for Gedit.ech
 sudo apt --yes install gedit-plugins
 
 # Change wallpaper.
 echo "*** Changing wallpaper... ***"
-pcmanfm --set-wallpaper $PATH_TO_WALLPAPER
-# ^ That line requires an absolute path, for some reason. ^
+if [ $raspian_flag = "y" ]; then
+    pcmanfm --set-wallpaper $PATH_TO_WALLPAPER
+else
+    gsettings set org.gnome.desktop.background picture-uri \
+        file:///$PATH_TO_WALLPAPER
+fi
 if [ $? -ne 0 ]; then exit 1; fi
 echo "*** Wallpaper changed. ***"
 cd $HOME
@@ -79,6 +101,18 @@ if [ ! -d chancery-b ]; then
     git clone https://github.com/tomhosker/chancery-b.git
     cd chancery-b/
     sh install_externals
+    cd ..
+fi
+
+########
+# HGMJ #
+########
+
+if [ ! -d hgmj ]; then
+    git clone https://github.com/tomhosker/hgmj.git
+    # Install third party software.
+    cd hgmj
+    sh install_3rd_party
     cd ..
 fi
 
