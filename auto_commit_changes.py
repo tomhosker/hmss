@@ -13,6 +13,7 @@ DIRECTORIES = ["chancery", "chancery-b", "hgmj", "hmss", "hoskers-almanack",
                "kingdom-of-cyprus"]
 PATH_TO_HOME = str(pathlib.Path.home())
 DEFAULT_PATH_TO_LOG = os.path.join(PATH_TO_HOME, "auto_commit.log")
+PATH_TO_GIT_CREDENTIALS = os.path.join(PATH_TO_HOME, ".git-credentials")
 
 #############
 # FUNCTIONS #
@@ -23,6 +24,13 @@ def append_to_log(string_to_write, path_to=DEFAULT_PATH_TO_LOG):
     string_to_write = str(datetime.now())+" | "+string_to_write+"\n"
     with open(path_to, "a") as log_file:
         log_file.write(string_to_write)
+
+def check_for_git_credentials():
+    """ Check that the file holding the GIT credentials exists. """
+    if not os.path.exists(PATH_TO_GIT_CREDENTIALS):
+        append_to_log("No GIT credentials found.")
+        return False
+    return True
 
 def commit_uncommitted_in_directory(name, super_path=PATH_TO_HOME,
                                     branch="master"):
@@ -46,6 +54,8 @@ def commit_uncommitted_in_directory(name, super_path=PATH_TO_HOME,
 
 def commit_uncommitted_in_directories(directories_list=DIRECTORIES):
     """ As above, but for several directories. """
+    if not check_for_git_credentials():
+        return
     for directory in directories:
         commit_uncommitted_in_directory(directory)
     append_to_log("Iterated over all directories without throwing an "+
