@@ -58,6 +58,14 @@ if [ $? -ne 0 ]; then exit 1; fi
 echo "*** Wallpaper changed. ***"
 cd $HOME
 
+####################
+# INTERNAL TO HMSS #
+####################
+
+# Add the script "auto_commit_changes.py" to Crontab, and also set up stored
+# credentials for GIT.
+sudo --preserve-env python3 auto_commit_setup.py
+
 ############
 # THE WIKI #
 ############
