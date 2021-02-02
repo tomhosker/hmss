@@ -43,10 +43,6 @@ def commit_uncommitted_in_directory(name, super_path=PATH_TO_HOME,
                       str(return_code)+".")
         return
     return_code = os.system("git commit -m \"HMSS auto commit.\"")
-    if return_code != 0:
-        append_to_log("Repo "+name+": Calling `git commit` returns code "+
-                      str(return_code)+".")
-        return
     return_code = os.system("git push origin "+branch)
     if return_code != 0:
         append_to_log("Repo "+name+": Calling `git push` returns code "+
@@ -56,7 +52,7 @@ def commit_uncommitted_in_directories(directories_list=DIRECTORIES):
     """ As above, but for several directories. """
     if not check_for_git_credentials():
         return
-    for directory in directories:
+    for directory in directories_list:
         commit_uncommitted_in_directory(directory)
     append_to_log("Iterated over all directories without throwing an "+
                   "exception.")
