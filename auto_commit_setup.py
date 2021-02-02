@@ -46,6 +46,7 @@ def set_up_crontab(addition=CRONTAB_ADDITION):
     with open("mycron", "r") as mycron_file:
         mycron_readout = mycron_file.read()
     if addition in mycron_readout:
+        os.remove("mycron")
         return
     mycron_new = mycron_readout+"\n"+addition+"\n"
     with open("mycron", "w") as mycron_file:
