@@ -40,8 +40,9 @@ sudo apt --yes install git
 # Install Chromium.
 sudo apt --yes install chromium-browser
 
-# Install PIP3.
+# Install PIP3 and PyLint.
 sudo apt --yes install python3-pip
+sudo apt --yes install pylint
 
 # Install the extra plugins for Gedit.ech
 sudo apt --yes install gedit-plugins
