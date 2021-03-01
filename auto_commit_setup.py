@@ -44,8 +44,8 @@ def set_up_git_credentials(path_to_git_credentials=PATH_TO_GIT_CREDENTIALS,
             credentials_file.write(credential)
     else:
         return False
-    os.path("git config --global credential.helper \"store --file "+
-            PATH_TO_GIT_CREDENTIALS+"\"")
+    os.system("git config --global credential.helper \"store --file "+
+              PATH_TO_GIT_CREDENTIALS+"\"")
     return True
 
 def set_up_crontab(addition=CRONTAB_ADDITION):
@@ -64,7 +64,6 @@ def set_up_crontab(addition=CRONTAB_ADDITION):
 
 def set_up_auto_commit(path_to_pat=DEFAULT_PATH_TO_PAT):
     """ Wrap the above into one function. """
-    os.system("echo \"$USER\"")
     if not set_up_git_credentials():
         print("No personal access token found, and therefore no auto-"+
               "commits could be set up.")

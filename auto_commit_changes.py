@@ -26,9 +26,9 @@ def append_to_log(string_to_write, path_to=DEFAULT_PATH_TO_LOG):
         log_file.write(string_to_write)
 
 def check_for_git_credentials():
-    """ Check that the file holding the GIT credentials exists. """
+    """ Check that the file holding the Git credentials exists. """
     if not os.path.exists(PATH_TO_GIT_CREDENTIALS):
-        append_to_log("No GIT credentials found.")
+        append_to_log("No Git credentials found.")
         return False
     return True
 
@@ -47,6 +47,7 @@ def commit_uncommitted_in_directory(name, super_path=PATH_TO_HOME,
     if return_code != 0:
         append_to_log("Repo "+name+": Calling `git push` returns code "+
                       str(return_code)+".")
+        append_to_log("uid="+str(os.getuid()))
 
 def commit_uncommitted_in_directories(directories_list=DIRECTORIES):
     """ As above, but for several directories. """
