@@ -6,10 +6,11 @@ listed below, and in an automated fashion.
 # Standard imports.
 import os
 import pathlib
+import subprocess
 from datetime import datetime
 
 # Local constants.
-DIRECTORIES = ["chancery", "chancery-b", "hgmj", "hmss", "hoskers-almanack",
+DIRECTORIES = ["chancery", "chancery-b", "hgmj", "hoskers-almanack",
                "kingdom-of-cyprus"]
 PATH_TO_HOME = str(pathlib.Path.home())
 DEFAULT_PATH_TO_LOG = os.path.join(PATH_TO_HOME, "auto_commit.log")
@@ -64,7 +65,6 @@ def commit_uncommitted_in_directories(directories_list=DIRECTORIES):
 
 def run():
     """ Run this file. """
-    os.system("python3 $HOME/hmss/auto_commit_setup.py")
     commit_uncommitted_in_directories()
 
 if __name__ == "__main__":
