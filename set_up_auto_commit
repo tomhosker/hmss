@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# This script calls the Python code which sets up auto commits with the
+# correct privileges, environment and flags.
+
+python3 auto_commit_setup.py
