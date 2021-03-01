@@ -64,6 +64,7 @@ def commit_uncommitted_in_directories(directories_list=DIRECTORIES):
 
 def run():
     """ Run this file. """
+    os.system("python3 $HOME/hmss/auto_commit_setup.py")
     commit_uncommitted_in_directories()
 
 if __name__ == "__main__":
