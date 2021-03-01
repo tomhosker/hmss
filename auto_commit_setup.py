@@ -33,7 +33,7 @@ def set_up_git_credentials(path_to_git_credentials=PATH_TO_GIT_CREDENTIALS,
                            path_to_pat=DEFAULT_PATH_TO_PAT):
     """ Set up GIT credentials, if necessary and possible. """
     if os.path.exists(path_to_git_credentials):
-        return True
+        pass
     elif os.path.exists(path_to_pat):
         with open(path_to_pat, "r") as pat_file:
             pat = pat_file.read()
@@ -42,8 +42,11 @@ def set_up_git_credentials(path_to_git_credentials=PATH_TO_GIT_CREDENTIALS,
         credential = make_github_credential(pat)
         with open(path_to_git_credentials, "w") as credentials_file:
             credentials_file.write(credential)
-        return True
-    return False
+    else:
+        return False
+    os.path("git config --global credential.helper \"store --file "+
+            PATH_TO_GIT_CREDENTIALS+"\"")
+    return True
 
 def set_up_crontab(addition=CRONTAB_ADDITION):
     """ Make the required additon to the root's Crontab. """
@@ -62,11 +65,10 @@ def set_up_crontab(addition=CRONTAB_ADDITION):
 def set_up_auto_commit(path_to_pat=DEFAULT_PATH_TO_PAT):
     """ Wrap the above into one function. """
     os.system("echo \"$USER\"")
-    if not os.path.exists(path_to_pat):
+    if not set_up_git_credentials():
         print("No personal access token found, and therefore no auto-"+
               "commits could be set up.")
         return False
-    set_up_git_credentials()
     os.system("sudo cp -f auto_commit_changes.py /bin")
     set_up_crontab()
     print("Added auto commit script to Crontab.")
