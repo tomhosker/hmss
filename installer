@@ -33,14 +33,14 @@ done
 cd $HOME
 sudo apt update
 sudo apt --yes upgrade
-sudo apt install software-properties-common
+sudo apt --yes install software-properties-common
 
 # Install Git.
 sudo apt --yes install git
 
 # Install Chrome.
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo apt install ./google-chrome-stable_current_amd64.deb
+sudo apt --yes install ./google-chrome-stable_current_amd64.deb
 
 # Install PIP3 and PyLint.
 sudo apt --yes install python3-pip
