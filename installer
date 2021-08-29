@@ -7,21 +7,49 @@
 
 # Constants.
 HMSS_DIR="$HOME/hmss"
-PATH_TO_WALLPAPER="$HMSS_DIR/wallpaper.jpg"
+PATH_TO_WALLPAPER_DIR="$HMSS_DIR/wallpaper"
+DEFAULT_PATH_TO_WALLPAPER="$PATH_TO_WALLPAPER_DIR/default.jpg"
+CHROME_STEM="https://dl.google.com/linux/direct/"
+CHROME_DEB="google-chrome-stable_current_amd64.deb"
 
-# Flags.
+# OS flags.
+ubuntu_flag="y"
 raspian_flag="n"
+chromeos_flag="n"
 other_os_flag="n"
+
+# Thunderbird flags.
+t1_flag="n"
+t2_flag="n"
+t3_flag="n"
+t4_flag="n"
+t5_flag="n"
 
 ################
 # UPDATE FLAGS #
 ################
 
+# Update OS flags.
 for flag in $@; do
     if [ $flag = "--raspian" ]; then
+        ubuntu_flag="n"
         raspian_flag="y"
+    elif [ $flag = "--chromeos" ]; then
+        ubuntu_flag="n"
+        chromeos_flag="y"
     elif [ $flag = "--other-os" ]; then
+        ubuntu_flag="n"
         other_os_flag="y"
+    fi
+done
+
+# Update Thunderbird flags.
+for flag in $@; do
+    if [ $flag = "--t1" ]; then t1_flag="y"; break
+    elif [ $flag = "--t2" ]; then t2_flag="y"; break
+    elif [ $flag = "--t3" ]; then t3_flag="y"; break
+    elif [ $flag = "--t4" ]; then t4_flag="y"; break
+    elif [ $flag = "--t5" ]; then t5_flag="y"; break
     fi
 done
 
@@ -39,27 +67,37 @@ sudo apt --yes install software-properties-common
 sudo apt --yes install git
 
 # Install Chrome.
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo apt --yes install ./google-chrome-stable_current_amd64.deb
+if [ $chromeos_flag = "n" ]; then
+    wget $CHROME_STEM/$CHROME_DEB
+    sudo apt --yes install ./$CHROME_DEB
+fi
 
 # Install PIP3 and PyLint.
 sudo apt --yes install python3-pip
 sudo apt --yes install pylint
 
-# Install the extra plugins for Gedit.ech
+# Install the extra plugins for Gedit.
 sudo apt --yes install gedit-plugins
 
 # Change wallpaper.
-echo "*** Changing wallpaper... ***"
-if [ $raspian_flag = "y" ]; then
-    pcmanfm --set-wallpaper $PATH_TO_WALLPAPER
-elif [ $other_os_flag = "n" ]; then
-    gsettings set org.gnome.desktop.background picture-uri \
-        file:///$PATH_TO_WALLPAPER
+echo "*** Attempting to change wallpaper... ***"
+if [ $t1_flag = "y" ]; then
+    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/wallpaper_t1.png"
+elif [ $t2_flag = "y" ]; then
+    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/wallpaper_t2.png"
+elif [ $t3_flag = "y" ]; then
+    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/wallpaper_t3.png"
+elif [ $t4_flag = "y" ]; then
+    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/wallpaper_t4.png"
+elif [ $t5_flag = "y" ]; then
+    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/wallpaper_t5.png"
 fi
-if [ $? -ne 0 ]; then exit 1; fi
-echo "*** Wallpaper changed. ***"
-cd $HOME
+if [ $ubuntu_flag = "y" ]; then
+    gsettings set org.gnome.desktop.background picture-uri \
+        file:///$path_to_wallpaper
+elif [ $raspian_flag = "y" ]; then
+    pcmanfm --set-wallpaper $path_to_wallpaper
+fi
 
 ############
 # THE WIKI #
@@ -133,3 +171,4 @@ sudo apt --yes install nomacs
 
 # That's it!
 echo "***** HMSS installed successfully! *****"
+echo "$path_to_wallpaper"
