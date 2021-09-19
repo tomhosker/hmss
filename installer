@@ -13,17 +13,8 @@ CHROME_STEM="https://dl.google.com/linux/direct/"
 CHROME_DEB="google-chrome-stable_current_amd64.deb"
 
 # OS flags.
-ubuntu_flag="y"
-raspian_flag="n"
-chromeos_flag="n"
-other_os_flag="n"
-
-# Thunderbird flags.
-t1_flag="n"
-t2_flag="n"
-t3_flag="n"
-t4_flag="n"
-t5_flag="n"
+os_flag="ubuntu"
+thunderbird_no="0"
 
 ################
 # UPDATE FLAGS #
@@ -31,25 +22,19 @@ t5_flag="n"
 
 # Update OS flags.
 for flag in $@; do
-    if [ $flag = "--raspian" ]; then
-        ubuntu_flag="n"
-        raspian_flag="y"
-    elif [ $flag = "--chromeos" ]; then
-        ubuntu_flag="n"
-        chromeos_flag="y"
-    elif [ $flag = "--other-os" ]; then
-        ubuntu_flag="n"
-        other_os_flag="y"
+    if [ $flag = "--raspian" ]; then os_flag="raspian"
+    elif [ $flag = "--chromeos" ]; then os_flag="chromeos"
+    elif [ $flag = "--other-os" ]; then os_flaf="other"
     fi
 done
 
 # Update Thunderbird flags.
 for flag in $@; do
-    if [ $flag = "--t1" ]; then t1_flag="y"; break
-    elif [ $flag = "--t2" ]; then t2_flag="y"; break
-    elif [ $flag = "--t3" ]; then t3_flag="y"; break
-    elif [ $flag = "--t4" ]; then t4_flag="y"; break
-    elif [ $flag = "--t5" ]; then t5_flag="y"; break
+    if [ $flag = "--t1" ]; then thunderbird_no="1"; break
+    elif [ $flag = "--t2" ]; then thunderbird_no="2"; break
+    elif [ $flag = "--t3" ]; then thunderbird_no="3"; break
+    elif [ $flag = "--t4" ]; then thunderbird_no="4"; break
+    elif [ $flag = "--t5" ]; then thunderbird_no="5"; break
     fi
 done
 
@@ -58,6 +43,7 @@ done
 ##########
 
 # Let's get cracking...
+echo "***** Installing HMSS... *****"
 cd $HOME
 sudo apt update
 sudo apt --yes upgrade
@@ -67,7 +53,7 @@ sudo apt --yes install software-properties-common
 sudo apt --yes install git
 
 # Install Chrome.
-if [ $chromeos_flag = "n" ]; then
+if [ $os_flag != "chromeos" ]; then
     wget $CHROME_STEM/$CHROME_DEB
     sudo apt --yes install ./$CHROME_DEB
 fi
@@ -80,22 +66,15 @@ sudo apt --yes install pylint
 sudo apt --yes install gedit-plugins
 
 # Change wallpaper.
-echo "*** Attempting to change wallpaper... ***"
-if [ $t1_flag = "y" ]; then
-    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/wallpaper_t1.png"
-elif [ $t2_flag = "y" ]; then
-    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/wallpaper_t2.png"
-elif [ $t3_flag = "y" ]; then
-    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/wallpaper_t3.png"
-elif [ $t4_flag = "y" ]; then
-    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/wallpaper_t4.png"
-elif [ $t5_flag = "y" ]; then
-    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/wallpaper_t5.png"
+if [ $thunderbird_no != "0" ]; then
+    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/wallpaper_t$thunderbird_no.png"
+else
+    path_to_wallpaper="$PATH_TO_WALLPAPER_DIR/default.png"
 fi
-if [ $ubuntu_flag = "y" ]; then
+if [ $os_flag = "ubuntu" ]; then
     gsettings set org.gnome.desktop.background picture-uri \
         file:///$path_to_wallpaper
-elif [ $raspian_flag = "y" ]; then
+elif [ $os_flag = "raspian" ]; then
     pcmanfm --set-wallpaper $path_to_wallpaper
 fi
 
@@ -169,6 +148,11 @@ sudo add-apt-repository --yes ppa:nomacs/stable
 sudo apt update
 sudo apt --yes install nomacs
 
+# Install some programs necessary on a Chromebook.
+if [ $os_flag = "chromeos" ]; then
+    sudo apt --yes install nautilus
+    sudo apt --yes install eog
+fi
+
 # That's it!
-echo "***** HMSS installed successfully! *****"
-echo "$path_to_wallpaper"
+echo "***** HMSS installed. *****"
