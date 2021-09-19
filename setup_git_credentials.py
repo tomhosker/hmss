@@ -50,7 +50,7 @@ def set_up_git_credentials(
         print("Error setting up GIT credentials: could not find PAT at "+
               path_to_pat+" or GIT credentials at "+path_to_git_credentials)
         return False
-    config_string = "\"store --file "+path_to_git_credentials+"\""
+    config_string = "store --file "+path_to_git_credentials
     subprocess.call(
         ["git", "config", "--global", "credential.helper", config_string])
     print("GIT credentials set up!")
