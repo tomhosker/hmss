@@ -156,3 +156,9 @@ fi
 
 # That's it!
 echo "***** HMSS installed. *****"
+
+### Please consider setting up a symbolic link to the Chromebook downloads
+### folder by:
+###    (1) Share said folder with Linux.
+###    (2) Run:
+###        ln -s /mnt/chromeos/MyFiles/Downloads $HOME/Downloads/chromebook_downloads

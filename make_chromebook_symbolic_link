@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# This is a script which makes a symbolic link to the Chromebook's downloads
+# folder.
+
+# Run me with `sh [FILENAME]`.
+
+# Constants.
+CHROMEBOOK_DOWNLOADS="/mnt/chromeos/MyFiles/Downloads"
+LINUX_DOWNLOADS="$HOME/Downloads"
+DOWNLOADS_SYMLINK="$LINUX_DOWNLOADS/chromebook_downloads2"
+
+if [ ! -L $DOWNLOADS_SYMLINK ]; then
+    if [ ! -d $CHROMEBOOK_DOWNLOADS ]; then
+        echo "Please share the Downloads folder with Linux, and try again."
+        exit 1
+    fi
+    if [ ! -d $LINUX_DOWNLOADS ]; then
+        mkdir $LINUX_DOWNLOADS
+    fi
+    ln -s $CHROMEBOOK_DOWNLOADS $DOWNLOADS_SYMLINK
+fi
