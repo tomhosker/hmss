@@ -56,6 +56,7 @@ sudo apt --yes install git
 if [ $os_flag != "chromeos" ]; then
     wget $CHROME_STEM/$CHROME_DEB
     sudo apt --yes install ./$CHROME_DEB
+    rm $CHROME_DEB
 fi
 
 # Install PIP3 and PyLint.
