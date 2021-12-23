@@ -1,0 +1,15 @@
+#!/bin/sh
+
+### This code replaces the old config file with the new one, and updates grub.
+
+# Constants.
+PATH_TO_GRUB_CONFIG="/etc/default/grub"
+NEW_CONFIG_FILENAME="grub_ubuntu_pci=noaer"
+
+# Fail on first error.
+set -e
+
+# Let's get cracking...
+sudo rm $PATH_TO_GRUB_CONFIG
+sudo cp $NEW_CONFIG_FILENAME $PATH_TO_GRUB_CONFIG
+sudo update-grub
