@@ -73,13 +73,3 @@ def set_up_git_credentials(
     )
     print("GIT credentials set up!")
     return True
-
-###################
-# RUN AND WRAP UP #
-###################
-
-def run():
-    set_up_git_credentials()
-
-if __name__ == "__main__":
-    run()

@@ -366,19 +366,3 @@ def upgrade_python():
     if not pip3_install("pytest"):
         result = False
     return result
-
-###################
-# RUN AND WRAP UP #
-###################
-
-def demo():
-    """ Run a demonstration. """
-    hmsi = HMSoftwareInstaller(thunderbird_num=2)
-    hmsi.run()
-
-def run():
-    """ Run this file. """
-    demo()
-
-if __name__ == "__main__":
-    run()
