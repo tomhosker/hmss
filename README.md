@@ -4,7 +4,7 @@
 
 ## To Use
 
-1. Download a zipped copy of this repository to the system in question.
-1. Navigate to the directory holding said .zip file.
-    * Run `python3 [FILENAME].zip -h` to learn about the various optional arguments.
-1. Run `python3 [FILENAME].zip` to run HMSS with default settings.
+1. Download a folder holding a copy of this repository to the system in question.
+1. Navigate to the directory holding said folder file.
+    * Run `python3 [FOLDER_NAME] -h` to learn about the various optional arguments.
+1. Run `python3 [FOLDER_NAME]` to run HMSS with default settings.
