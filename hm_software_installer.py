@@ -187,6 +187,11 @@ class HMSoftwareInstaller:
             )
         return result
 
+    def install_hmss(self):
+        """ Install the HMSS repo. """
+        result = self.install_own_repo("hmss")
+        return result
+
     def install_hgmj(self):
         """ Install the HGMJ repo. """
         repo_name = "hgmj"
@@ -238,6 +243,9 @@ class HMSoftwareInstaller:
         if not self.install_google_chrome():
             self.failure_log.append("Install Google Chrome")
             result = False
+        print("Installing HMSS...")
+        if not self.install_hmss():
+            self.failure_log.append("Install HMSS")
         print("Installing Kingdom of Cyprus...")
         if not self.install_kingdom_of_cyprus():
             self.failure_log.append("Install Kingdom of Cyprus")

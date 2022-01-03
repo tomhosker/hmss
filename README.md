@@ -4,6 +4,7 @@
 
 ## To Use
 
-1. Download a copy of this repository to the system in question.
-1. Navigate to this repository's directory.
-1. Run `sh installer`.
+1. Download a zipped copy of this repository to the system in question.
+1. Navigate to the directory holding said .zip file.
+    * Run `python3 [FILENAME].zip -h` to learn about the various optional arguments.
+1. Run `python3 [FILENAME].zip` to run HMSS with default settings.
