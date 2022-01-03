@@ -56,7 +56,7 @@ class HMSoftwareInstaller:
         self.path_to_pat = path_to_pat
         self.git_username = git_username
         self.email_address = email_address
-        self.path_to_wallpaper_dir=path_to_wallpaper_dir
+        self.path_to_wallpaper_dir = path_to_wallpaper_dir
         self.failure_log = []
 
     def check_os(self):
@@ -87,8 +87,10 @@ class HMSoftwareInstaller:
 
     def install_google_chrome(self):
         """ Ronseal. """
-        if (check_command_exists("google-chrome") or
-            self.this_os == "chrome-os"):
+        if (
+            check_command_exists("google-chrome") or
+            self.this_os == "chrome-os"
+        ):
             return True
         chrome_url = urllib.parse.urljoin(self.CHROME_STEM, self.CHROME_DEB)
         chrome_deb_path = "./"+self.CHROME_DEB
@@ -263,7 +265,7 @@ class HMSoftwareInstaller:
         if passed and with_flying_colours:
             print("Installation PASSED with flying colours!")
             return
-        elif passed and not with_flying_colours:
+        if passed:
             print("Installation PASSED but with non-essential failures.")
         else:
             print("Installation FAILED.")
