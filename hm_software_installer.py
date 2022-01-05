@@ -106,6 +106,10 @@ class HMSoftwareInstaller:
                 "gerund": "Installing HGMJ",
                 "method": self.install_hgmj
             }, {
+                "imperative": "Install SQLite",
+                "gerund": "Installing SQLite",
+                "method": install_sqlite
+            }, {
                 "imperative": "Install other third party",
                 "gerund": "Installing other third party",
                 "method": self.install_other_third_party
@@ -401,3 +405,11 @@ def upgrade_python():
     if not pip3_install("pytest"):
         result = False
     return result
+
+def install_sqlite():
+    """ Install both SQLite and a browser for it. """
+    if not install_via_apt("sqlite"):
+        return False
+    if not install_via_apt("sqlitebrowser"):
+        return False
+    return True
