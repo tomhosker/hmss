@@ -34,7 +34,7 @@ class HMSoftwareInstaller:
     GIT_URL_STEM = "https://github.com/"
     MISSING_FROM_CHROME = ("eog", "nautilus")
     OTHER_THIRD_PARTY = ("gedit-plugins", "inkscape")
-    SUPPORTED_OSS = set(("ubuntu", "chrome-os", "raspian", "linux-based"))
+    SUPPORTED_OSS = {"ubuntu", "chrome-os", "raspian", "linux-based"}
     WALLPAPER_STEM = "wallpaper_t"
     WALLPAPER_EXT = ".png"
 
@@ -58,6 +58,60 @@ class HMSoftwareInstaller:
         self.email_address = email_address
         self.path_to_wallpaper_dir = path_to_wallpaper_dir
         self.failure_log = []
+
+    def make_essentials(self):
+        """ Build a tuple of essential processes to run. """
+        result = (
+            {
+                "imperative": "Check OS",
+                "gerund": "Checking OS",
+                "method": self.check_os
+            }, {
+                "imperative": "Update and upgrade",
+                "gerund": "Updating and upgrading",
+                "method": update_and_upgrade
+            }, {
+                "imperative": "Upgrade Python",
+                "gerund": "Upgrading Python",
+                "method": upgrade_python
+            }, {
+                "imperative": "Set up Git",
+                "gerund": "Setting up Git",
+                "method": self.set_up_git
+            }
+        )
+        return result
+
+    def make_non_essentials(self):
+        """ Build a tuple of non-essential processes to run. """
+        result = (
+            {
+                "imperative": "Install Google Chrome",
+                "gerund": "Installing Google Chrome",
+                "method": self.install_google_chrome
+            }, {
+                "imperative": "Install HMSS",
+                "gerund": "Installing HMSS",
+                "method": self.install_hmss
+            }, {
+                "imperative": "Install Kingdom of Cyprus",
+                "gerund": "Installing Kingdom of Cyprus",
+                "method": self.install_kingdom_of_cyprus
+            }, {
+                "imperative": "Install Chancery repos",
+                "gerund": "Installing Chancery repos",
+                "method": self.install_chancery
+            }, {
+                "imperative": "Install HGMJ",
+                "gerund": "Installing HGMJ",
+                "method": self.install_hgmj
+            }, {
+                "imperative": "Install other third party",
+                "gerund": "Installing other third party",
+                "method": self.install_other_third_party
+            }
+        )
+        return result
 
     def check_os(self):
         """ Test whether the OS we're using is supported. """
@@ -218,50 +272,23 @@ class HMSoftwareInstaller:
     def run_essentials(self):
         """ Run those processes which, if they fail, we will have to stop
         the entire program there. """
-        print("Checking OS...")
-        if not self.check_os():
-            self.failure_log.append("Check OS")
-            return False
-        print("Updating and upgrading...")
-        if not update_and_upgrade():
-            self.failure_log.append("Update and upgrade")
-            return False
-        print("Upgrading Python...")
-        if not upgrade_python():
-            self.failure_log.append("Upgrade Python")
-            return False
-        print("Setting up Git...")
-        if not self.set_up_git():
-            self.failure_log.append("Set up Git")
-            return False
+        for item in self.make_essentials():
+            print(item["gerund"]+"...")
+            method_to_run = item["method"]
+            if not method_to_run():
+                self.failure_log.append(item["imperative"])
+                return False
         return True
 
     def run_non_essentials(self):
         """ Run the installation processes. """
         result = True
-        print("Installing Google Chrome...")
-        if not self.install_google_chrome():
-            self.failure_log.append("Install Google Chrome")
-            result = False
-        print("Installing HMSS...")
-        if not self.install_hmss():
-            self.failure_log.append("Install HMSS")
-        print("Installing Kingdom of Cyprus...")
-        if not self.install_kingdom_of_cyprus():
-            self.failure_log.append("Install Kingdom of Cyprus")
-            result = False
-        print("Installing Chancery repos...")
-        if not self.install_chancery():
-            self.failure_log.append("Install Chancery repos")
-            result = False
-        print("Installing HGMJ...")
-        if not self.install_hgmj():
-            self.failure_log.append("Install HGMJ")
-            result = False
-        print("Installing other third party...")
-        if not self.install_other_third_party():
-            self.failure_log.append("Install other third party")
-            result = False
+        for item in self.make_non_essentials():
+            print(item["gerund"]+"...")
+            method_to_run = item["method"]
+            if not method_to_run():
+                self.failure_log.append(item["imperative"])
+                result = False
         print("Changing wallpaper...")
         if not self.change_wallpaper():
             self.failure_log.append("Change wallpaper")
@@ -323,7 +350,7 @@ def run_with_indulgence(arguments, show_output=False):
 
 def run_apt_with_argument(argument):
     """ Run APT with an argument, and tell me how it went. """
-    arguments = ["sudo", "apt-get", argument]
+    arguments = ["sudo", "apt-get", "--yes", argument]
     result = run_with_indulgence(arguments)
     return result
 
