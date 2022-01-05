@@ -198,15 +198,15 @@ class HMSoftwareInstaller:
     def install_own_repo(
             self,
             repo_name,
-            dependent_packages=None,
+            underpinning_packages=None,
             installation_arguments=None
         ):
         """ Install a custom repo. """
         if os.path.exists(repo_name):
             print("Looks like "+repo_name+" already exists...")
             return True
-        if dependent_packages:
-            for package_name in dependent_packages:
+        if underpinning_packages:
+            for package_name in underpinning_packages:
                 if not install_via_apt(package_name):
                     return False
         arguments = ["git", "clone", self.make_git_url(repo_name)]
@@ -222,26 +222,21 @@ class HMSoftwareInstaller:
 
     def install_kingdom_of_cyprus(self):
         """ Install the Kingdom of Cyprus repo. """
-        repo_name = "kingdom-of-cyprus"
-        dependent_packages = ("sqlite", "sqlitebrowser", "nodejs", "npm")
         result = \
             self.install_own_repo(
-                repo_name,
-                dependent_packages=dependent_packages
+                "kingdom-of-cyprus",
+                underpinning_packages=("nodejs", "npm")
             )
         return result
 
     def install_chancery(self):
         """ Install the Chancery repos. """
-        repo_name = "chancery"
-        if not self.install_own_repo(repo_name):
+        if not self.install_own_repo("chancery"):
             return False
-        repo_name_b = "chancery-b"
-        installation_arguments_b = ("sh", "install_3rd_party")
         result = \
             self.install_own_repo(
-                repo_name_b,
-                installation_arguments=installation_arguments_b
+                "chancery-b",
+                installation_arguments=("sh", "install_3rd_party")
             )
         return result
 
@@ -252,12 +247,10 @@ class HMSoftwareInstaller:
 
     def install_hgmj(self):
         """ Install the HGMJ repo. """
-        repo_name = "hgmj"
-        installation_arguments = ("sh", "install_3rd_party")
         result = \
             self.install_own_repo(
-                repo_name,
-                installation_arguments=installation_arguments
+                "hgmj",
+                installation_arguments=("sh", "install_3rd_party")
             )
         return result
 
