@@ -1,0 +1,15 @@
+#!/bin/sh
+
+### This code runs this repo's continuous integration routine.
+
+# Constants.
+MIN_PYLINT_SCORE=8
+
+# Make the script fail on any errors.
+set -e
+
+echo "Running continuous integration routine..."
+
+pylint --fail-under=$MIN_PYLINT_SCORE &>/dev/null
+
+echo "Success!"

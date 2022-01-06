@@ -9,6 +9,8 @@ import pathlib
 import shutil
 import subprocess
 import urllib.parse
+from dataclasses import dataclass
+from typing import ClassVar
 
 # Local imports.
 from git_credentials import set_up_git_credentials, \
@@ -20,14 +22,28 @@ DEFAULT_OS = "ubuntu"
 DEFAULT_TARGET_DIR = str(pathlib.Path.home())
 DEFAULT_PATH_TO_WALLPAPER_DIR = \
     os.path.join(DEFAULT_TARGET_DIR, "hmss/wallpaper/")
+DEFAULT_PYTHON_VERSION = 3
 
 ##############
 # MAIN CLASS #
 ##############
 
+@dataclass
 class HMSoftwareInstaller:
     """ The class in question. """
-    # Class constants.
+    # Fields
+    this_os: str = DEFAULT_OS
+    target_dir: str = DEFAULT_TARGET_DIR
+    thunderbird_num: int = None
+    path_to_git_credentials: str = DEFAULT_PATH_TO_GIT_CREDENTIALS
+    path_to_pat: str = DEFAULT_PATH_TO_PAT
+    git_username: str = DEFAULT_GIT_USERNAME
+    email_address: str = DEFAULT_EMAIL_ADDRESS
+    path_to_wallpaper_dir: str = DEFAULT_PATH_TO_WALLPAPER_DIR
+    python_version: int = DEFAULT_PYTHON_VERSION
+    pip_version: int = DEFAULT_PYTHON_VERSION
+
+    # Class attributes.
     CHROME_DEB = "google-chrome-stable_current_amd64.deb"
     CHROME_STEM = "https://dl.google.com/linux/direct/"
     EXPECTED_PATH_TO_GOOGLE_CHROME_COMMAND = "/usr/bin/google-chrome"
@@ -37,27 +53,10 @@ class HMSoftwareInstaller:
     SUPPORTED_OSS = {"ubuntu", "chrome-os", "raspian", "linux-based"}
     WALLPAPER_STEM = "wallpaper_t"
     WALLPAPER_EXT = ".png"
-
-    def __init__(
-            self,
-            this_os=DEFAULT_OS,
-            target_dir=DEFAULT_TARGET_DIR,
-            thunderbird_num=None,
-            path_to_git_credentials=DEFAULT_PATH_TO_GIT_CREDENTIALS,
-            path_to_pat=DEFAULT_PATH_TO_PAT,
-            git_username=DEFAULT_GIT_USERNAME,
-            email_address=DEFAULT_EMAIL_ADDRESS,
-            path_to_wallpaper_dir=DEFAULT_PATH_TO_WALLPAPER_DIR
-        ):
-        self.this_os = this_os
-        self.target_dir = target_dir
-        self.thunderbird_num = thunderbird_num
-        self.path_to_git_credentials = path_to_git_credentials
-        self.path_to_pat = path_to_pat
-        self.git_username = git_username
-        self.email_address = email_address
-        self.path_to_wallpaper_dir = path_to_wallpaper_dir
-        self.failure_log = []
+    PIP_PACKAGES = (
+        { "name": "pylint", "operator": ">=", "version": "2.12.2" },
+        { "name": "pytest", "operator": None, "version": None }
+    )
 
     def make_essentials(self):
         """ Build a tuple of essential processes to run. """
@@ -73,7 +72,7 @@ class HMSoftwareInstaller:
             }, {
                 "imperative": "Upgrade Python",
                 "gerund": "Upgrading Python",
-                "method": upgrade_python
+                "method": self.upgrade_python
             }, {
                 "imperative": "Set up Git",
                 "gerund": "Setting up Git",
@@ -143,11 +142,35 @@ class HMSoftwareInstaller:
             return False
         return True
 
+    def upgrade_python(self):
+        """ Install PIP and other useful Python hangers-on. """
+        pip_package_name = "python"+str(self.python_version)+"-pip"
+        result = True
+        if not install_via_apt(pip_package_name):
+            result = False
+        if not self.install_pip_packages():
+            result = False
+        return result
+
+    def install_pip_packages(self):
+        """ Install the various PIP packages specified in the class
+        attribute above. """
+        pip_command = "pip"+str(self.pip_version)
+        result = True
+        for package in self.PIP_PACKAGES:
+            id_string = package["name"]
+            if package["operator"] and package["version"]:
+                id_string = id_string+package["operator"]+package["version"]
+            command_to_run = [pip_command, "install", id_string]
+            if not run_with_indulgence(command_to_run):
+                result = False
+        return result
+
     def install_google_chrome(self):
         """ Ronseal. """
         if (
             check_command_exists("google-chrome") or
-            self.this_os == "chrome-os"
+            (self.this_os == "chrome-os")
         ):
             return True
         chrome_url = urllib.parse.urljoin(self.CHROME_STEM, self.CHROME_DEB)
@@ -381,23 +404,6 @@ def update_and_upgrade():
     if not install_via_apt("software-properties-common"):
         return False
     return True
-
-def pip3_install(package):
-    """ Run `pip3 install [package]`. """
-    if run_with_indulgence(["pip3", "install", package]):
-        return True
-    return False
-
-def upgrade_python():
-    """ Install PIP3 and other useful Python hangers-on. """
-    result = True
-    if not install_via_apt("python3-pip"):
-        result = False
-    if not pip3_install("pylint"):
-        result = False
-    if not pip3_install("pytest"):
-        result = False
-    return result
 
 def install_sqlite():
     """ Install both SQLite and a browser for it. """
