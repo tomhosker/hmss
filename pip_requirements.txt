@@ -1,3 +1,0 @@
-# This file lists the PIP packages that this repo uses.
-pylint>=2.12.2 # Early versions lack --fail-under flag.
-pytest

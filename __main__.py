@@ -19,6 +19,7 @@ from hm_software_installer import \
     DEFAULT_PYTHON_VERSION
 
 # Constants.
+PROGRAM_DESCRIPTION = "His Majesty's Software Suite"
 ARGUMENTS = [
     {
         "name": "--os",
@@ -88,15 +89,18 @@ ARGUMENTS = [
         "dest": "thunderbird_num",
         "help": "The Thunderbird number for this device",
         "type": int
-    }
-]
-BOOLEAN_ARGUMENTS = [
-    {
+    }, {
         "name": "--reset-git-credentials-only",
         "action": "store_true",
         "default": False,
         "dest": "reset_git_credentials_only",
         "help": "Reset the Git credentials, but perform no installations"
+    }, {
+        "name": "--show-output",
+        "action": "store_true",
+        "default": False,
+        "dest": "show_output",
+        "help": "Show the output from the various commands called"
     }
 ]
 
@@ -104,53 +108,29 @@ BOOLEAN_ARGUMENTS = [
 # HELPER FUNCTIONS #
 ####################
 
-def add_boolean_arguments(parser):
-    """ Add the Boolean flags to the parser object. """
-    for argument in BOOLEAN_ARGUMENTS:
-        parser.add_argument(
-            argument["name"],
-            action=argument["action"],
-            default=argument["default"],
-            dest=argument["dest"],
-            help=argument["help"]
-        )
-
-def make_parser():
-    """ Ronseal. """
-    result = argparse.ArgumentParser(description="Parser for HMSS")
+def get_attribute_names():
+    """ Get the names of the attributes of the HMSoftwareInstaller that we're
+    going to modify via the command line. """
+    result = []
     for argument in ARGUMENTS:
-        result.add_argument(
-            argument["name"],
-            default=argument["default"],
-            dest=argument["dest"],
-            help=argument["help"],
-            type=argument["type"]
-        )
-    add_boolean_arguments(result)
+        result.append(argument["dest"])
     return result
 
 def make_installer_obj(arguments):
     """ Ronseal. """
-    result = \
-        HMSoftwareInstaller(
-            this_os=arguments.this_os,
-            target_dir=arguments.target_dir,
-            thunderbird_num=arguments.thunderbird_num,
-            path_to_git_credentials=arguments.path_to_git_credentials,
-            path_to_pat=arguments.path_to_pat,
-            git_username=arguments.git_username,
-            email_address=arguments.email_address,
-            path_to_wallpaper_dir=arguments.path_to_wallpaper_dir
-        )
+    result = HMSoftwareInstaller()
+    attribute_names = get_attribute_names()
+    for attribute_name in attribute_names:
+        attribute_value = getattr(arguments, attribute_name)
+        setattr(result, attribute_name, attribute_value)
     return result
 
-def run_git_credentials_function(arguments):
-    set_up_git_credentials(
-        username=arguments.git_username,
-        email_address=arguments.email_address,
-        path_to_git_credentials=arguments.path_to_git_credentials,
-        path_to_pat=arguments.path_to_pat
-    )
+def make_parser():
+    """ Ronseal. """
+    result = argparse.ArgumentParser(description=PROGRAM_DESCRIPTION)
+    for argument in ARGUMENTS:
+        result.add_argument(argument.pop("name"), **argument)
+    return result
 
 ###################
 # RUN AND WRAP UP #

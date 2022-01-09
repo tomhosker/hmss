@@ -13,9 +13,12 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 # Local imports.
-from git_credentials import set_up_git_credentials, \
-    DEFAULT_PATH_TO_GIT_CREDENTIALS, DEFAULT_PATH_TO_PAT, \
-    DEFAULT_USERNAME as DEFAULT_GIT_USERNAME, DEFAULT_EMAIL_ADDRESS
+from git_credentials import \
+    set_up_git_credentials, \
+    DEFAULT_PATH_TO_GIT_CREDENTIALS, \
+    DEFAULT_PATH_TO_PAT, \
+    DEFAULT_USERNAME as DEFAULT_GIT_USERNAME, \
+    DEFAULT_EMAIL_ADDRESS
 
 # Local constants.
 DEFAULT_OS = "ubuntu"
@@ -42,18 +45,23 @@ class HMSoftwareInstaller:
     path_to_wallpaper_dir: str = DEFAULT_PATH_TO_WALLPAPER_DIR
     python_version: int = DEFAULT_PYTHON_VERSION
     pip_version: int = DEFAULT_PYTHON_VERSION
+    test_run: bool = False
+    show_output: bool = False
 
     # Class attributes.
-    CHROME_DEB = "google-chrome-stable_current_amd64.deb"
-    CHROME_STEM = "https://dl.google.com/linux/direct/"
-    EXPECTED_PATH_TO_GOOGLE_CHROME_COMMAND = "/usr/bin/google-chrome"
-    GIT_URL_STEM = "https://github.com/"
-    MISSING_FROM_CHROME = ("eog", "nautilus")
-    OTHER_THIRD_PARTY = ("gedit-plugins", "inkscape")
-    SUPPORTED_OSS = {"ubuntu", "chrome-os", "raspian", "linux-based"}
-    WALLPAPER_STEM = "wallpaper_t"
-    WALLPAPER_EXT = ".png"
-    PIP_PACKAGES = (
+    CHROME_DEB: ClassVar[str] = "google-chrome-stable_current_amd64.deb"
+    CHROME_STEM: ClassVar[str] = "https://dl.google.com/linux/direct/"
+    EXPECTED_PATH_TO_GOOGLE_CHROME_COMMAND: ClassVar[str] = \
+        "/usr/bin/google-chrome"
+    GIT_URL_STEM: ClassVar[str] = "https://github.com/"
+    MISSING_FROM_CHROME: ClassVar[tuple] = ("eog", "nautilus")
+    OTHER_THIRD_PARTY: ClassVar[tuple] = ("gedit-plugins", "inkscape")
+    SUPPORTED_OSS: ClassVar[set] = {
+        "ubuntu", "chrome-os", "raspian", "linux-based"
+    }
+    WALLPAPER_STEM: ClassVar[str] = "wallpaper_t"
+    WALLPAPER_EXT: ClassVar[str] = ".png"
+    PIP_PACKAGES: ClassVar[tuple] = (
         { "name": "pylint", "operator": ">=", "version": "2.12.2" },
         { "name": "pytest", "operator": None, "version": None }
     )
@@ -68,7 +76,7 @@ class HMSoftwareInstaller:
             }, {
                 "imperative": "Update and upgrade",
                 "gerund": "Updating and upgrading",
-                "method": update_and_upgrade
+                "method": self.update_and_upgrade
             }, {
                 "imperative": "Upgrade Python",
                 "gerund": "Upgrading Python",
@@ -107,7 +115,7 @@ class HMSoftwareInstaller:
             }, {
                 "imperative": "Install SQLite",
                 "gerund": "Installing SQLite",
-                "method": install_sqlite
+                "method": self.install_sqlite
             }, {
                 "imperative": "Install other third party",
                 "gerund": "Installing other third party",
@@ -128,7 +136,7 @@ class HMSoftwareInstaller:
 
     def set_up_git(self):
         """ Install Git and set up a personal access token. """
-        install_result = install_via_apt("git")
+        install_result = self.install_via_apt("git")
         if not install_result:
             return False
         pat_result = \
@@ -146,7 +154,7 @@ class HMSoftwareInstaller:
         """ Install PIP and other useful Python hangers-on. """
         pip_package_name = "python"+str(self.python_version)+"-pip"
         result = True
-        if not install_via_apt(pip_package_name):
+        if not self.install_via_apt(pip_package_name):
             result = False
         if not self.install_pip_packages():
             result = False
@@ -162,7 +170,7 @@ class HMSoftwareInstaller:
             if package["operator"] and package["version"]:
                 id_string = id_string+package["operator"]+package["version"]
             command_to_run = [pip_command, "install", id_string]
-            if not run_with_indulgence(command_to_run):
+            if not self.run_with_indulgence(command_to_run):
                 result = False
         return result
 
@@ -178,7 +186,7 @@ class HMSoftwareInstaller:
         download_process = subprocess.run(["wget", chrome_url])
         if download_process.returncode != 0:
             return False
-        if not install_via_apt(chrome_deb_path):
+        if not self.install_via_apt(chrome_deb_path):
             return False
         os.remove(chrome_deb_path)
         return True
@@ -209,7 +217,7 @@ class HMSoftwareInstaller:
             arguments = ["pcmanfm", "--set-wallpaper", wallpaper_path]
         else:
             return False
-        result = run_with_indulgence(arguments)
+        result = self.run_with_indulgence(arguments)
         return result
 
     def make_git_url(self, repo_name):
@@ -230,14 +238,14 @@ class HMSoftwareInstaller:
             return True
         if underpinning_packages:
             for package_name in underpinning_packages:
-                if not install_via_apt(package_name):
+                if not self.install_via_apt(package_name):
                     return False
         arguments = ["git", "clone", self.make_git_url(repo_name)]
-        if not run_with_indulgence(arguments):
+        if not self.run_with_indulgence(arguments):
             return False
         os.chdir(repo_name)
         if installation_arguments:
-            if not run_with_indulgence(arguments):
+            if not self.run_with_indulgence(arguments):
                 os.chdir(self.target_dir)
                 return False
         os.chdir(self.target_dir)
@@ -281,13 +289,77 @@ class HMSoftwareInstaller:
         """ Install some other useful packages. """
         result = True
         for package in self.OTHER_THIRD_PARTY:
-            if not install_via_apt(package):
+            if not self.install_via_apt(package):
                 result = False
         if self.this_os == "chrome-os":
             for package in self.MISSING_FROM_CHROME:
-                if not install_via_apt(package):
+                if not self.install_via_apt(package):
                     result = False
         return result
+
+    def get_sudo(self):
+        """ Get superuser privileges. """
+        if self.test_run:
+            return
+        print("I'm going to need superuser privileges for this...")
+        subprocess.run(
+            ["sudo", "echo", "Superuser privileges: activate!"],
+            check=True
+        )
+
+    def run_with_indulgence(self, arguments):
+        """ Run a command, and don't panic immediately if we get a non-zero
+        return code. """
+        if self.test_run:
+            return True
+        if self.show_output:
+            print("Running subprocess.run() with arguments:")
+            print(arguments)
+            process = subprocess.run(arguments)
+        else:
+            process = subprocess.run(arguments, stdout=subprocess.DEVNULL)
+        if process.returncode == 0:
+            return True
+        return False
+
+    def run_apt_with_argument(self, argument):
+        """ Run APT with an argument, and tell me how it went. """
+        arguments = ["sudo", "apt-get", "--yes", argument]
+        result = self.run_with_indulgence(arguments)
+        return result
+
+    def check_against_dpkg(self, package_name):
+        """ Check whether a given package is on the books with DPKG. """
+        result = self.run_with_indulgence(["dpkg", "--status", package_name])
+        return result
+
+    def install_via_apt(self, package_name, command=None):
+        """ Attempt to install a package, and tell me how it went. """
+        if not command:
+            command = package_name
+        if check_command_exists(command):
+            return True
+        arguments = ["sudo", "apt-get", "--yes", "install", package_name]
+        result = self.run_with_indulgence(arguments)
+        return result
+
+    def update_and_upgrade(self):
+        """ Update and upgrade the existing software. """
+        if not self.run_apt_with_argument("update"):
+            return False
+        if not self.run_apt_with_argument("upgrade"):
+            return False
+        if not self.install_via_apt("software-properties-common"):
+            return False
+        return True
+
+    def install_sqlite(self):
+        """ Install both SQLite and a browser for it. """
+        if not self.install_via_apt("sqlite"):
+            return False
+        if not self.install_via_apt("sqlitebrowser"):
+            return False
+        return True
 
     def run_essentials(self):
         """ Run those processes which, if they fail, we will have to stop
@@ -332,7 +404,7 @@ class HMSoftwareInstaller:
     def run(self):
         """ Run the software installer. """
         print("Running His Majesty's Software Installer...")
-        get_sudo()
+        self.get_sudo()
         self.move_to_target_dir()
         if not self.run_essentials():
             print("\nFinished.\n\n")
@@ -347,68 +419,8 @@ class HMSoftwareInstaller:
 # HELPER FUNCTIONS #
 ####################
 
-def get_sudo():
-    """ Get superuser privileges. """
-    print("I'm going to need superuser privileges for this...")
-    subprocess.run(
-        ["sudo", "echo", "Superuser privileges: activate!"],
-        check=True
-    )
-
-def run_with_indulgence(arguments, show_output=False):
-    """ Run a command, and don't panic immediately if we get a non-zero
-    return code. """
-    if show_output:
-        print("Running subprocess.run() with arguments:")
-        print(arguments)
-        process = subprocess.run(arguments)
-    else:
-        process = subprocess.run(arguments, stdout=subprocess.DEVNULL)
-    if process.returncode == 0:
-        return True
-    return False
-
-def run_apt_with_argument(argument):
-    """ Run APT with an argument, and tell me how it went. """
-    arguments = ["sudo", "apt-get", "--yes", argument]
-    result = run_with_indulgence(arguments)
-    return result
-
-def check_against_dpkg(package_name):
-    """ Check whether a given package is on the books with DPKG. """
-    result = run_with_indulgence(["dpkg", "--status", package_name])
-    return result
-
 def check_command_exists(command):
     """ Check whether a given command exists on this computer. """
     if shutil.which(command):
         return True
     return False
-
-def install_via_apt(package_name, command=None):
-    """ Attempt to install a package, and tell me how it went. """
-    if not command:
-        command = package_name
-    if check_command_exists(command):
-        return True
-    arguments = ["sudo", "apt-get", "--yes", "install", package_name]
-    result = run_with_indulgence(arguments)
-    return result
-
-def update_and_upgrade():
-    """ Update and upgrade the existing software. """
-    if not run_apt_with_argument("update"):
-        return False
-    if not run_apt_with_argument("upgrade"):
-        return False
-    if not install_via_apt("software-properties-common"):
-        return False
-    return True
-
-def install_sqlite():
-    """ Install both SQLite and a browser for it. """
-    if not install_via_apt("sqlite"):
-        return False
-    if not install_via_apt("sqlitebrowser"):
-        return False
-    return True
