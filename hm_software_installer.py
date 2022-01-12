@@ -64,7 +64,8 @@ class HMSoftwareInstaller:
     WALLPAPER_EXT: ClassVar[str] = ".png"
     PIP_PACKAGES: ClassVar[tuple] = (
         { "name": "pylint", "operator": ">=", "version": "2.12.2" },
-        { "name": "pytest", "operator": None, "version": None }
+        { "name": "pytest", "operator": None, "version": None },
+        { "name": "pytest-cov", "operator": None, "version": None }
     )
 
     def make_essentials(self):
@@ -425,7 +426,3 @@ def check_command_exists(command):
     if shutil.which(command):
         return True
     return False
-
-def silly_function():
-    print("This function is silly!")
-    print("It just prints stuff out!")
