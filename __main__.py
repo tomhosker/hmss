@@ -7,16 +7,17 @@ import argparse
 
 # Local imports.
 from git_credentials import set_up_git_credentials
-from hm_software_installer import \
-    HMSoftwareInstaller, \
-    DEFAULT_OS, \
-    DEFAULT_TARGET_DIR, \
-    DEFAULT_PATH_TO_WALLPAPER_DIR, \
-    DEFAULT_PATH_TO_GIT_CREDENTIALS, \
-    DEFAULT_PATH_TO_PAT, \
-    DEFAULT_GIT_USERNAME, \
-    DEFAULT_EMAIL_ADDRESS, \
+from hm_software_installer import (
+    HMSoftwareInstaller,
+    DEFAULT_OS,
+    DEFAULT_TARGET_DIR,
+    DEFAULT_PATH_TO_WALLPAPER_DIR,
+    DEFAULT_PATH_TO_GIT_CREDENTIALS,
+    DEFAULT_PATH_TO_PAT,
+    DEFAULT_GIT_USERNAME,
+    DEFAULT_EMAIL_ADDRESS,
     DEFAULT_PYTHON_VERSION
+)
 
 # Constants.
 PROGRAM_DESCRIPTION = "His Majesty's Software Suite"

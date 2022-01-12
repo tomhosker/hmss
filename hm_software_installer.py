@@ -13,12 +13,13 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 # Local imports.
-from git_credentials import \
-    set_up_git_credentials, \
-    DEFAULT_PATH_TO_GIT_CREDENTIALS, \
-    DEFAULT_PATH_TO_PAT, \
-    DEFAULT_USERNAME as DEFAULT_GIT_USERNAME, \
+from git_credentials import (
+    set_up_git_credentials,
+    DEFAULT_PATH_TO_GIT_CREDENTIALS,
+    DEFAULT_PATH_TO_PAT,
+    DEFAULT_USERNAME as DEFAULT_GIT_USERNAME,
     DEFAULT_EMAIL_ADDRESS
+)
 
 # Local constants.
 DEFAULT_OS = "ubuntu"
@@ -424,3 +425,7 @@ def check_command_exists(command):
     if shutil.which(command):
         return True
     return False
+
+def silly_function():
+    print("This function is silly!")
+    print("It just prints stuff out!")
