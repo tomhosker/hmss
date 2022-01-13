@@ -9,17 +9,17 @@ import pathlib
 import shutil
 import subprocess
 import urllib.parse
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 # Local imports.
-from git_credentials import (
-    set_up_git_credentials,
+from config import (
     DEFAULT_PATH_TO_GIT_CREDENTIALS,
     DEFAULT_PATH_TO_PAT,
-    DEFAULT_USERNAME as DEFAULT_GIT_USERNAME,
+    DEFAULT_GIT_USERNAME,
     DEFAULT_EMAIL_ADDRESS
 )
+from git_credentials import set_up_git_credentials
 
 # Local constants.
 DEFAULT_OS = "ubuntu"
@@ -48,6 +48,7 @@ class HMSoftwareInstaller:
     pip_version: int = DEFAULT_PYTHON_VERSION
     test_run: bool = False
     show_output: bool = False
+    failure_log: list = field(default_factory=list)
 
     # Class attributes.
     CHROME_DEB: ClassVar[str] = "google-chrome-stable_current_amd64.deb"

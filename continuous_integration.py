@@ -5,8 +5,10 @@ routines.
 
 # Standard imports.
 import os
-import pytest
 import subprocess
+
+# Non-standard imports.
+import pytest
 
 # Local constants.
 DEFAULT_MIN_CODE_COVERAGE = 50
@@ -15,6 +17,12 @@ DEFAULT_MIN_LINT_SCORE = 8
 #############
 # FUNCTIONS #
 #############
+
+def is_python_file(filename):
+    """ Determine whether a given filename represents a Python file. """
+    if filename and filename.endswith(".py"):
+        return True
+    return False
 
 def run_unit_tests(min_code_coverage=DEFAULT_MIN_CODE_COVERAGE):
     """ Run PyTest. """
@@ -25,12 +33,6 @@ def run_unit_tests(min_code_coverage=DEFAULT_MIN_CODE_COVERAGE):
     ]
     return_code = pytest.main(arguments)
     assert return_code == 0, "PyTest returned code: "+str(return_code)
-
-def is_python_file(filename):
-    """ Determine whether a given filename represents a Python file. """
-    if filename and filename.endswith(".py"):
-        return True
-    return False
 
 def run_linter_strictly(min_lint_score=DEFAULT_MIN_LINT_SCORE):
     """ Run PyLint, checking that EACH file reaches a given score. """
@@ -46,7 +48,7 @@ def run_linter_indulgently(min_lint_score=DEFAULT_MIN_LINT_SCORE):
     for filename in os.listdir():
         if is_python_file(filename):
             arguments.append(filename)
-    subprocess.run(arguments+[filename], check=True)
+    subprocess.run(arguments, check=True)
 
 def run_linter(min_lint_score=DEFAULT_MIN_LINT_SCORE, strict=False):
     """ Run PyLint """

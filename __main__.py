@@ -6,9 +6,8 @@ This code serves as the entry point to this package.
 import argparse
 
 # Local imports.
-from git_credentials import set_up_git_credentials
-from hm_software_installer import (
-    HMSoftwareInstaller,
+from config import (
+    PROGRAM_DESCRIPTION,
     DEFAULT_OS,
     DEFAULT_TARGET_DIR,
     DEFAULT_PATH_TO_WALLPAPER_DIR,
@@ -18,9 +17,10 @@ from hm_software_installer import (
     DEFAULT_EMAIL_ADDRESS,
     DEFAULT_PYTHON_VERSION
 )
+from git_credentials import set_up_git_credentials
+from hm_software_installer import HMSoftwareInstaller
 
 # Constants.
-PROGRAM_DESCRIPTION = "His Majesty's Software Suite"
 ARGUMENTS = [
     {
         "name": "--os",
@@ -127,11 +127,24 @@ def make_installer_obj(arguments):
     return result
 
 def make_parser():
-    """ Ronseal. """
+    """ Make and return the parser object. """
     result = argparse.ArgumentParser(description=PROGRAM_DESCRIPTION)
     for argument in ARGUMENTS:
         result.add_argument(argument.pop("name"), **argument)
     return result
+
+def run_git_credentials_function(
+        arguments,
+        git_credentials_function=set_up_git_credentials
+    ):
+    """ Run the function which sets up the Git credentials, using SOME of
+    of the arguments found in the arguments object. """
+    git_credentials_function(
+        username=arguments.git_username,
+        email_address=arguments.email_address,
+        path_to_git_credentials=arguments.path_to_git_credentials,
+        path_to_pat=arguments.path_to_pat
+    )
 
 ###################
 # RUN AND WRAP UP #
