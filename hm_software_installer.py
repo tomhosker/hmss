@@ -48,6 +48,7 @@ class HMSoftwareInstaller:
     pip_version: int = DEFAULT_PYTHON_VERSION
     test_run: bool = False
     show_output: bool = False
+    minimal: bool = True
     failure_log: list = field(default_factory=list)
 
     # Class attributes.
@@ -413,6 +414,9 @@ class HMSoftwareInstaller:
             print("\nFinished.\n\n")
             self.print_outcome(False, False)
             return False
+        if self.minimal:
+            self.print_outcome(True, True)
+            return True
         with_flying_colours = self.run_non_essentials()
         print("\nComplete!\n")
         self.print_outcome(True, with_flying_colours)

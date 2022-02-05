@@ -102,6 +102,12 @@ ARGUMENTS = [
         "default": False,
         "dest": "show_output",
         "help": "Show the output from the various commands called"
+    }, {
+        "name": "--min",
+        "action": "store_true",
+        "default": False,
+        "dest": "minimal",
+        "help": "A minimal install"
     }
 ]
 
